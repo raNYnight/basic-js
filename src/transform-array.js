@@ -14,34 +14,27 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
  function transform(arr) {
-  if(!Array.isArray(arr)){
-    throw new Error('"arr" parameter must be an instance of the Array!')
+  if (!Array.isArray(arr)) {
+    throw new Error("'arr' parameter must be an instance of the Array!");
   }
-  let result = [];
+  let copy = [...arr]
   for (let i = 0; i < arr.length; i++){
-    result.push(arr[i])
-    // 1)
-    if(arr[i] == '--double-next'){
-      result.splice(result.length-1,1)
-      if(arr[i+1] ==! undefined){result.push(arr[i+1])}
+    if (copy[i] === '--discard-next' && i !== 0 && i != copy.length-1) {
+      copy.splice(i, 2)
+      break;
     }
-    // 2)
-    if(arr[i] == '--double-prev'){
-      result.splice(result.length-1,1)
-      if(arr[i-1] ==! undefined){result.push(arr[i-1])}
-       
+    if (copy[i] === '--discard-prev' && i !== 0 && i != copy.length-1) {
+      copy.splice(i-1, 2)
+      break;
     }
-    // 3)
-    if(arr[i] == '--discard-next'){
-      result.splice(result.length-1,1)
-      arr.splice(arr[i+1])
+    if (copy[i] === '--double-next' && i != copy.length-1) {
+      copy[i] = copy[i+1]
     }
-    if(arr[i] == '--discard-prev'){
-      result.splice(result.length-2,2)
-    }
-     
-  }
-  return result
+    if (copy[i] === '--double-prev' && i !== 0 && i != copy.length-1) {
+      copy[i] = copy[i-1]
+    }   
+  }   
+      return copy.filter(el => el !== '--discard-next' && el !== '--discard-prev' && el !== '--double-next' && el !== '--double-prev');
 }
 
 module.exports = {
